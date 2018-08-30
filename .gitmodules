@@ -1,0 +1,3 @@
+[submodule "examples/p2p-videochat/theta-plugin-sdk"]
+	path = examples/p2p-videochat/theta-plugin-sdk
+	url = https://github.com/ricohapi/theta-plugin-sdk

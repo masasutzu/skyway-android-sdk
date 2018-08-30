@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +45,11 @@ import io.skyway.Peer.PeerOption;
 public class MainActivity extends Activity {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
+	private AudioManager am;
+	private Camera mCamera = null;
+	private int mCameraId;
+	private Camera.Parameters mParameters;
+
 	//
 	// Set your APIkey and Domain
 	//
@@ -61,6 +68,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE"));
 		super.onCreate(savedInstanceState);
 
 		Window wnd = getWindow();
@@ -251,6 +259,21 @@ public class MainActivity extends Activity {
 	// Get a local MediaStream & show it
 	//
 	void startLocalStream() {
+		if(am  == null){
+			am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+			am.setParameters("RicUseBFormat=false");
+		}
+		if (mCamera == null) {
+			mCamera = Camera.open();
+
+			mParameters = mCamera.getParameters();
+			// mParameters.setPreviewSize(1920, 960);
+			mParameters.set("RIC_SHOOTING_MODE", "RicStillPreview1920");
+			mParameters.set("RIC_PROC_STITCHING", "RicStaticStitching");
+			mParameters.set("recording-hint", "false");
+			mCamera.setParameters(mParameters);
+
+		}
 		Navigator.initialize(_peer);
 		MediaConstraints constraints = new MediaConstraints();
 		_localStream = Navigator.getUserMedia(constraints);
